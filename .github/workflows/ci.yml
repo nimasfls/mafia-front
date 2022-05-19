@@ -21,8 +21,20 @@ jobs:
       - name: Login to docker registry
         run: docker login ${{ secrets.DOCKER_REGISTRY_HOST }} -u ${{ secrets.DOCKER_REGISTRY_USER }} -p ${{ secrets.DOCKER_REGISTRY_SECRET }}
 
+      - name: Check changed files
+          id: files
+          uses: jitterbit/get-changed-files@v1
+          with:
+            format: 'json'
+
+      - name: Build dependency docker image if needed
+        if: contains(steps.files.outputs.all, 'package.json')
+        run: |
+          echo "package.json has been changed"
+          docker build . -f .github/Dependency.dockerfile -t registry.nimasfl.ir/mafia-front-dep
+
       - name: Build docker image
-        run: docker build . -f .github/Dockerfile -t registry.nimasfl.ir/mafia-front:latest
+        run: docker build . -f .github/Builder.dockerfile -t registry.nimasfl.ir/mafia-front
 
       - name: Push docker image
         run: docker push registry.nimasfl.ir/mafia-front:latest
