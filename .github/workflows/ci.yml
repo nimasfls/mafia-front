@@ -32,6 +32,7 @@ jobs:
         run: |
           echo "package.json has been changed"
           docker build . -f .github/Dependency.dockerfile -t registry.nimasfl.ir/mafia-front-dep
+          docker push registry.nimasfl.ir/mafia-front-dep
 
       - name: Build docker image
         run: docker build . -f .github/Builder.dockerfile -t registry.nimasfl.ir/mafia-front
